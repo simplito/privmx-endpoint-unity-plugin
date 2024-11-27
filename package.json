@@ -1,0 +1,15 @@
+{
+  "name": "com.simplito.privmx",
+  "version": "0.0.1",
+  "displayName": "Simplito Privmx Endpoint",
+  "description": "Package that integrates Unity with Simplito Privmx platform",
+  "documentationUrl": "https://docs.privmx.dev/unity/overview",
+  "unity": "2022.3",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "author": {
+    "name": "Simplito sp. z o. o.",
+    "url": "https://simplito.com/en"
+  }
+}
