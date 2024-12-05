@@ -20,25 +20,26 @@ namespace Simplito.Extensions
 	{
 		public static async Task<string> CreateStoreAsync(this IStoreApi api, string contextId,
 			List<UserWithPubKey> users, List<UserWithPubKey> managers, byte[] publicMeta, byte[] privateMeta,
+			ContainerPolicy containerPolicy,
 			CancellationToken token = default)
 		{
 			if (api == null) throw new ArgumentNullException(nameof(api));
 			string result = default;
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
-				() => { result = api.CreateStore(contextId, users, managers, publicMeta, privateMeta); }, token);
+				() => { result = api.CreateStore(contextId, users, managers, publicMeta, privateMeta, containerPolicy); }, token);
 			return result;
 		}
 
 		public static async Task UpdateStoreAsync(this IStoreApi api, string storeId, List<UserWithPubKey> users,
 			List<UserWithPubKey> managers, byte[] publicMeta, byte[] privateMeta, long version, bool force,
-			bool forceGenerateNewKey, CancellationToken token = default)
+			bool forceGenerateNewKey, ContainerPolicy containerPolicy = null, CancellationToken token = default)
 		{
 			if (api == null) throw new ArgumentNullException(nameof(api));
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
 				() =>
 				{
 					api.UpdateStore(storeId, users, managers, publicMeta, privateMeta, version, force,
-						forceGenerateNewKey);
+						forceGenerateNewKey, containerPolicy);
 				}, token);
 		}
 

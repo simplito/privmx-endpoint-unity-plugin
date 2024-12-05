@@ -29,13 +29,43 @@ namespace Simplito
 		/// <param name="platformUrl">the platform endpoint URL</param>
 		/// <param name="token">cancellation token that breaks operation execution</param>
 		/// <returns></returns>
-		public static async Task<Connection> PlatformConnectAsync(string userPrivKey, string solutionId,
+		[Obsolete("Use ConnectAsync")]
+		public static Task<Connection> PlatformConnectAsync(string userPrivKey, string solutionId,
+			string platformUrl, CancellationToken token = default)
+		{
+			return ConnectAsync(userPrivKey, solutionId, platformUrl, token);
+		}
+
+		/// <summary>
+		///     Connects to platform backend.
+		/// </summary>
+		/// <param name="userPrivKey">users private key</param>
+		/// <param name="solutionId">ID of the solution</param>
+		/// <param name="platformUrl">the platform endpoint URL</param>
+		/// <param name="token">cancellation token that breaks operation execution</param>
+		/// <returns></returns>
+		public static async Task<Connection> ConnectAsync(string userPrivKey, string solutionId,
 			string platformUrl, CancellationToken token = default)
 		{
 			var connection = default(Connection);
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
-				() => { connection = Connection.PlatformConnect(userPrivKey, solutionId, platformUrl); }, token);
+				() => { connection = Connection.Connect(userPrivKey, solutionId, platformUrl); }, token);
 			return connection;
+		}
+
+
+		/// <summary>
+		///     Connects to the platform backend as guest user
+		/// </summary>
+		/// <param name="solutionId"></param>
+		/// <param name="platformUrl"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		[Obsolete("Use ConnectPublicAsync")]
+		public static Task<Connection> PlatformConnectPublicAsync(string solutionId, string platformUrl,
+			CancellationToken token = default)
+		{
+			return ConnectPublicAsync(solutionId, platformUrl, token);
 		}
 
 		/// <summary>
@@ -45,12 +75,12 @@ namespace Simplito
 		/// <param name="platformUrl"></param>
 		/// <param name="token"></param>
 		/// <returns></returns>
-		public static async Task<Connection> PlatformConnectPublicAsync(string solutionId, string platformUrl,
+		public static async Task<Connection> ConnectPublicAsync(string solutionId, string platformUrl,
 			CancellationToken token = default)
 		{
 			var connection = default(Connection);
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
-				() => { connection = Connection.PlatformConnectPublic(solutionId, platformUrl); }, token);
+				() => { connection = Connection.ConnectPublic(solutionId, platformUrl); }, token);
 			return connection;
 		}
 

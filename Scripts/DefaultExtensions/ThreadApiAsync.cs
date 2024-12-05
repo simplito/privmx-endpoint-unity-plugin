@@ -32,30 +32,31 @@ namespace Simplito
 
 		public static async Task<string> CreateThreadAsync(this IThreadApi threadApi, string contextId,
 			List<UserWithPubKey> users, List<UserWithPubKey> managers, byte[] publicMeta, byte[] privateMeta,
+			ContainerPolicy containerPolicy = null,
 			CancellationToken token = default)
 		{
 			if (threadApi is null) throw new ArgumentNullException(nameof(threadApi));
 			var threadId = default(string);
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
-				() => { threadId = threadApi.CreateThread(contextId, users, managers, publicMeta, privateMeta); },
+				() => { threadId = threadApi.CreateThread(contextId, users, managers, publicMeta, privateMeta, containerPolicy); },
 				token);
 			return threadId;
 		}
 
 		public static async Task UpdateThreadAsync(this IThreadApi threadApi, string threadId,
 			List<UserWithPubKey> users, List<UserWithPubKey> managers, byte[] publicMeta, byte[] privateMeta,
-			long version, bool force, bool forceGenerateNewKey, CancellationToken token)
+			long version, bool force, bool forceGenerateNewKey, ContainerPolicy containerPolicy = null, CancellationToken token = default)
 		{
 			if (threadApi is null) throw new ArgumentNullException(nameof(threadApi));
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
 				() =>
 				{
 					threadApi.UpdateThread(threadId, users, managers, publicMeta, privateMeta, version, force,
-						forceGenerateNewKey);
+						forceGenerateNewKey, containerPolicy);
 				}, token);
 		}
 
-		public static async Task DeleteThreadAsync(this IThreadApi threadApi, string threadId, CancellationToken token)
+		public static async Task DeleteThreadAsync(this IThreadApi threadApi, string threadId, CancellationToken token = default)
 		{
 			if (threadApi is null) throw new ArgumentException(nameof(threadApi));
 			await SynchronizationContextHelper.ThreadPoolSynchronizationContext.AbortNonCooperative(
@@ -63,7 +64,7 @@ namespace Simplito
 		}
 
 		public static async Task<Thread> GetThreadAsync(this IThreadApi threadApi,
-			string threadId, CancellationToken token)
+			string threadId, CancellationToken token = default)
 		{
 			if (threadApi is null) throw new ArgumentException(nameof(threadApi));
 			var thread = default(Thread);

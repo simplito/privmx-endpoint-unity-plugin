@@ -8,6 +8,7 @@
 #nullable enable
 using System;
 using PrivMX.Endpoint.Core;
+using PrivMX.Endpoint.Core.Models;
 using UnityEngine;
 
 namespace Simplito.Exceptions
@@ -26,7 +27,7 @@ namespace Simplito.Exceptions
 		private string? userId, contextId;
 
 		[SerializeField]
-		private InternalError internalError;
+		private Error internalError;
 
 		private object[] inputArguments;
 
@@ -39,8 +40,7 @@ namespace Simplito.Exceptions
 			this.inputArguments = inputArguments;
 			this.contextId = contextId;
 			this.userId = userId;
-			internalError = new InternalError(internalException.Error.Message, internalException.Error.Type,
-				internalException.Error.Code);
+			internalError = internalException.Error;
 		}
 
 		public string InternalMethodApi => internalMethodApi;
@@ -66,15 +66,30 @@ namespace Simplito.Exceptions
 			[SerializeField]
 			private long code;
 
+			[SerializeField]
+			private string scope;
+
+			[SerializeField]
+			private string description;
+
+			[SerializeField]
+			private string full;
+
 			public string Message => message;
 			public long Type => type;
 			public long Code => code;
+			public string Scope => scope;
+			public string Description => description;
+			public string Full => full;
 
-			public InternalError(string message, long type, long code)
+			public InternalError(string message, long type, long code, string scope, string description, string full)
 			{
 				this.message = message;
 				this.type = type;
 				this.code = code;
+				this.scope = scope;
+				this.description = description;
+				this.full = full;
 			}
 		}
 	}

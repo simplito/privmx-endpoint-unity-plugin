@@ -1,20 +1,20 @@
 {
-  "name": "SimplitoPrivmx",
-  "rootNamespace": "Simplito",
-  "references": [],
-  "includePlatforms": [
-    "Android",
-    "Editor",
-    "WindowsStandalone64"
-  ],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "PrivmxEndpointWrapper.dll"
-  ],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "SimplitoPrivmx",
+    "rootNamespace": "Simplito",
+    "references": [],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "PrivmxEndpointCsharp.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -4,7 +4,7 @@
 // Copyright (c) Simplito sp. z o.o.
 // 
 // This file is part of Simplito PrivMX Unity plugin under MIT License.
-
+#nullable enable
 using System.Collections.Generic;
 using PrivMX.Endpoint.Core;
 using PrivMX.Endpoint.Core.Models;
@@ -52,18 +52,18 @@ namespace Simplito.Api
 			Connection.Disconnect();
 		}
 
-		string IStoreApi.CreateStore(string contextId, List<UserWithPubKey> users, List<UserWithPubKey> managers,
-			byte[] publicMeta, byte[] privateMeta)
+		string IStoreApi.CreateStore(string storeId, List<UserWithPubKey> users, List<UserWithPubKey> managers,
+			byte[] publicMeta, byte[] privateMeta, ContainerPolicy? policies)
 		{
-			return StoreApi.CreateStore(contextId, users, managers, publicMeta, privateMeta);
+			return StoreApi.CreateStore(storeId, users, managers, publicMeta, privateMeta,  policies);
 		}
 
 		void IStoreApi.UpdateStore(string storeId, List<UserWithPubKey> users, List<UserWithPubKey> managers,
 			byte[] publicMeta, byte[] privateMeta, long version,
-			bool force, bool forceGenerateNewKey)
+			bool force, bool forceGenerateNewKey, ContainerPolicy? policies)
 		{
 			StoreApi.UpdateStore(storeId, users, managers, publicMeta, privateMeta, version, force,
-				forceGenerateNewKey);
+				forceGenerateNewKey, policies);
 		}
 
 		void IStoreApi.DeleteStore(string storeId)
@@ -157,17 +157,17 @@ namespace Simplito.Api
 		}
 
 		string IThreadApi.CreateThread(string contextId, List<UserWithPubKey> users, List<UserWithPubKey> managers,
-			byte[] publicMeta, byte[] privateMeta)
+			byte[] publicMeta, byte[] privateMeta, ContainerPolicy policy)
 		{
-			return ThreadApi.CreateThread(contextId, users, managers, publicMeta, privateMeta);
+			return ThreadApi.CreateThread(contextId, users, managers, publicMeta, privateMeta, policy);
 		}
 
 		void IThreadApi.UpdateThread(string threadId, List<UserWithPubKey> users, List<UserWithPubKey> managers,
 			byte[] publicMeta, byte[] privateMeta, long version,
-			bool force, bool forceGenerateNewKey)
+			bool force, bool forceGenerateNewKey, ContainerPolicy policy)
 		{
 			ThreadApi.UpdateThread(threadId, users, managers, publicMeta, privateMeta, version, force,
-				forceGenerateNewKey);
+				forceGenerateNewKey, policy);
 		}
 
 		void IThreadApi.DeleteThread(string threadId)
