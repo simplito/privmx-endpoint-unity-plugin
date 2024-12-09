@@ -11,7 +11,6 @@ using System.Threading;
 using PrivMX.Endpoint.Core;
 using PrivMX.Endpoint.Thread;
 using PrivMX.Endpoint.Thread.Models;
-using Simplito.Api;
 using Simplito.Extensions;
 using Simplito.Interfaces;
 using Simplito.Internal.Utils;
@@ -23,7 +22,7 @@ using UnityEngine;
 using Event = PrivMX.Endpoint.Core.Models.Event;
 using Exception = System.Exception;
 
-namespace Simplito.Internal.Api
+namespace Simplito.Api
 {
 	public sealed class PrivMXEventDispatcher : IEventSource, IDisposable
 	{
@@ -55,7 +54,7 @@ namespace Simplito.Internal.Api
 
 		public IObservable<Union<ThreadCreatedEvent, ThreadUpdatedEvent, ThreadDeletedEvent>> GetThreadsUpdates()
 		{
-			const string channelName = "threadsUpdate";
+			const string channelName = "threads";
 			if (_disposed)
 				throw new ObjectDisposedException(nameof(PrivMXEventDispatcher));
 			if (!_chanelNameToObservables.TryGetValue(channelName, out var handler))
@@ -79,7 +78,7 @@ namespace Simplito.Internal.Api
 			if (_disposed)
 				throw new ObjectDisposedException(nameof(PrivMXEventDispatcher));
 
-			var channelName = $"{threadId}/messages";
+			var channelName = $"thread/{threadId}/messages";
 			if (!_chanelNameToObservables.TryGetValue(channelName, out var handler))
 			{
 				var eventDispatcher =
@@ -134,8 +133,8 @@ namespace Simplito.Internal.Api
 				await foreach (var serializedEvent in EventQueue.WaitEventsAsync(CancellationTokenSource.Token))
 					try
 					{
-						if (_chanelNameToObservables.TryGetValue(serializedEvent.Type, out var handler))
-							handler.HandleEvent(serializedEvent);
+						foreach (var eventHandler in _chanelNameToObservables.Values)
+							eventHandler.HandleEvent(serializedEvent);
 					}
 					catch (Exception exception)
 					{
@@ -149,7 +148,7 @@ namespace Simplito.Internal.Api
 			}
 			catch (Exception exception)
 			{
-				Logger.Log(LogType.Log, $"{nameof(PrivMXEventDispatcher)} finished exceptionally", exception);
+				Logger.Log(LogType.Error, $"{nameof(PrivMXEventDispatcher)} finished exceptionally", exception);
 			}
 
 			Logger.Log(LogType.Log, $"{nameof(PrivMXEventDispatcher)} finished");
@@ -191,11 +190,6 @@ namespace Simplito.Internal.Api
 						WrappedInvokeObservable.Send(
 							new Union<ThreadCreatedEvent, ThreadUpdatedEvent, ThreadDeletedEvent>(deletedEvent));
 						return;
-					default:
-						Logger.Log(LogType.Assert,
-							$"Unexpected event type {{type}} passed to {nameof(ThreadChannelEventDispatcher)}",
-							args: @event.GetType());
-						break;
 				}
 			}
 		}
@@ -230,16 +224,11 @@ namespace Simplito.Internal.Api
 					case ThreadNewMessageEvent createdEvent:
 						WrappedInvokeObservable.Send(
 							new Union<ThreadNewMessageEvent, ThreadMessageDeletedEvent>(createdEvent));
-						return;
+						return;      
 					case ThreadMessageDeletedEvent deletedEvent:
 						WrappedInvokeObservable.Send(
 							new Union<ThreadNewMessageEvent, ThreadMessageDeletedEvent>(deletedEvent));
 						return;
-					default:
-						Logger.Log(LogType.Assert,
-							$"Unexpected event type {{type}} passed to {nameof(ThreadChannelEventDispatcher)}",
-							args: @event.GetType());
-						break;
 				}
 			}
 		}

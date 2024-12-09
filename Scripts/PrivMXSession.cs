@@ -14,7 +14,6 @@ using PrivMX.Endpoint.Thread.Models;
 using Simplito.Api;
 using Simplito.Exceptions;
 using Simplito.Interfaces;
-using Simplito.Internal.Api;
 using Simplito.Internal.Utils;
 using Simplito.Logging;
 using Simplito.Utils;
@@ -56,7 +55,7 @@ namespace Simplito
 		private PrivMxApi? _api;
 
 		private PrivMXEventDispatcher? _eventDispatcher;
-		private ILibraryLogger _logger;
+		private ILibraryLogger _logger = null!;
 
 		/// <summary>
 		///     Id of solution in which user is authenticated.
@@ -69,7 +68,7 @@ namespace Simplito
 		/// </summary>
 		public IObservableValue<State> SessionState => _sessionState;
 
-		private void Start()
+		private void Awake()
 		{
 			_logger = PrivMXConfiguration.CreateLoggerFor<PrivMxSession>();
 		}
