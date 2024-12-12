@@ -1,40 +1,24 @@
-﻿# Simplito PrivMX
+﻿# PrivMX Endpoint Unity Plugin
 
-> TODO: Introduction to product
+This repository provides Unity plugin used by PrivMX to handle end-to-end (e2e) encryption.
+PrivMX is a privacy-focused platform designed to offer secure collaboration solutions by integrating robust encryption across various data types and communication methods.
+This project enables seamless integration of PrivMX’s encryption functionalities in Unity application.
 
 # Requirements
 
 At least Unity `2022.3.x`.
+Access to running privmx bridge [privmx-bridge](https://github.com/simplito/privmx-bridge)
 
-# Installation
+# Documentation
+Documentation of how to install and use this plugin is available in the [Documentation~](./Documentation~) directory.
 
-Library can be installed in various ways:
+## License information
 
-## As git repository with package manager (recommended)
+**PrivMX Endpoint C#**\
+Copyright © 2024 Simplito sp. z o.o.
 
-> TODO: Write this section after initial migration to Github
+This project is part of the PrivMX Platform (https://privmx.dev). \
+This project is Licensed under the MIT License.
 
-## By coping source to `Packages` directory 
-Library can be installed in project by copying this repository contents into `Packages` directory in Unity project.
-
-# Core interface
-Main entry point for the library is the [PrivMXSession](./SimplitoPrivMX/PrivMXSession.cs) MonoBehaviour class.
-`PrivMXSession` encapsulates session of single authenticated user.
-Most of public methods in this class require user authentication before use.
-        
-Most parts of the public API are asynchronous operations either methods returning [Task\<T\>](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-8.0)/[ValueTask\<T\>](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask?view=net-8.0) or [IObservable\<T\>]()
-
-It's recommended to use [R3](https://github.com/Cysharp/R3) to simplify use of `IObservable<T>` returned from library.
-
-
-# Getting started
-
-> TODO: Sample of how to move from login flow to sending message in thread
- 
-# Samples
-
-If the `R3` library is not an option then there are utility classes included in the library samples that should simplify interaction with observables in Unity.
-
-![](./Documentation~/utility_sample.png)
-
-
+PrivMX Endpoint and PrivMX Bridge are licensed under the PrivMX Free License.\
+See the License for the specific language governing permissions and limitations under the License.
