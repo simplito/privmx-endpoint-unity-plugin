@@ -37,9 +37,9 @@ namespace Simplito.Api
 		private ThreadApi ThreadApi { get; }
 		private StoreApi StoreApi { get; }
 
-		long IConnection.GetInstanceId()
+		long IConnection.GetConnectionId()
 		{
-			return Connection.GetInstanceId();
+			return Connection.GetConnectionId();
 		}
 
 		PagingList<Context> IConnection.ListContexts(PagingQuery pagingQuery)
