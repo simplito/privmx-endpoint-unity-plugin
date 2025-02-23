@@ -11,7 +11,9 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "PrivmxEndpointCsharp.dll"
+        "PrivmxEndpointCsharp.dll",
+        "PrivmxEndpointCsharpExtra.dll",
+        "InternalTools.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

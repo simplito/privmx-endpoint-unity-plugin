@@ -1,6 +1,6 @@
 {
   "name": "com.simplito.privmx",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "displayName": "Simplito Privmx Endpoint",
   "description": "Package that integrates Unity with Simplito Privmx platform",
   "documentationUrl": "https://docs.privmx.dev/unity/overview",

@@ -8,6 +8,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Internal;
 using Simplito.Internal.Utils;
 
 namespace Simplito.Utils.Observables

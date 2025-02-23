@@ -9,14 +9,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using PrivMX.Endpoint.Core;
-using PrivMX.Endpoint.Thread.Models;
-using Simplito.Api;
+using PrivMX.Endpoint.Crypto;
+using PrivmxEndpointCsharpExtra;
 using Simplito.Exceptions;
 using Simplito.Interfaces;
 using Simplito.Internal.Utils;
-using Simplito.Logging;
-using Simplito.Utils;
 using Simplito.Utils.Observables;
 using UnityEngine;
 
@@ -27,7 +24,7 @@ namespace Simplito
 	///     Encapsulates a single authenticated user within a single privmx application.
 	///     Single source of state for the libarary.
 	/// </summary>
-	public class PrivMxSession : MonoBehaviour, IEventSource
+	public class PrivMxSession : MonoBehaviour
 	{
 		/// <summary>
 		///     PrivMX session user authentication state.
@@ -51,11 +48,10 @@ namespace Simplito
 			Authenticated = 4
 		}
 
-		private readonly ObservableValue<State> _sessionState = new(State.NotAuthenticated);
-		private PrivMxApi? _api;
+		private static CryptoApi _cryptoApi = CryptoApi.Create();
 
-		private PrivMXEventDispatcher? _eventDispatcher;
-		private ILibraryLogger _logger = null!;
+		private readonly ObservableValue<State> _sessionState = new(State.NotAuthenticated);
+		private ConnectionSession? _api;
 
 		/// <summary>
 		///     Id of solution in which user is authenticated.
@@ -68,45 +64,11 @@ namespace Simplito
 		/// </summary>
 		public IObservableValue<State> SessionState => _sessionState;
 
-		private void Awake()
-		{
-			_logger = PrivMXConfiguration.CreateLoggerFor<PrivMxSession>();
-		}
-
 		private void OnDestroy()
 		{
 			_sessionState.Value = State.NotAuthenticated;
 			SolutionId = null;
-
-			_eventDispatcher?.Dispose();
-			(_api as IConnection)?.Disconnect();
-		}
-
-		/// <summary>
-		///     Returns observable that sends events about threads updates (creation of new thread, change in existing thread,
-		///     deletion of existing thread)
-		///     <exception cref="PrivMxSessionException">Thrown when user is not authenticated.</exception>
-		///     /// <exception cref="PrivMxInternalException">Throw when internal library plugin ran exceptionally</exception>
-		/// </summary>
-		/// <returns>Observable with thread events.</returns>
-		public IObservable<Union<ThreadCreatedEvent, ThreadUpdatedEvent, ThreadDeletedEvent>> GetThreadsUpdates()
-		{
-			ThrowIfNotAuthenticated();
-			return _eventDispatcher!.GetThreadsUpdates();
-		}
-
-		/// <summary>
-		///     Observable that sends events related to messages in single thread.
-		/// </summary>
-		/// <exception cref="NotAuthenticatedException">Thrown when user is not authenticated</exception>
-		/// <exception cref="PrivMxInternalException">Throw when internal library plugin ran exceptionally</exception>
-		/// <param name="threadId">Id of thead for which updates should be send</param>
-		/// <returns>Observable that sends events for about messages in the specified thread.</returns>
-		public IObservable<Union<ThreadNewMessageEvent, ThreadMessageDeletedEvent>> GetThreadMessageUpdates(
-			string threadId)
-		{
-			ThrowIfNotAuthenticated();
-			return _eventDispatcher!.GetThreadMessageUpdates(threadId);
+			_api?.DisposeAsync();
 		}
 
 		/// <summary>
@@ -115,7 +77,7 @@ namespace Simplito
 		///     intentionally or connection breaks.
 		///     <exception cref="PrivMxSessionException">Thrown when user is not authenticated.</exception>
 		/// </summary>
-		public PrivMxApi GetCurrentConnectionApi()
+		public ConnectionSession GetCurrentConnectionApi()
 		{
 			return _api ?? throw new PrivMxSessionException(this, "Session is not authenticated");
 		}
@@ -150,13 +112,9 @@ namespace Simplito
 				try
 				{
 					if (_api != null)
-						await _api.DisconnectAsync(token);
-					_api = new PrivMxApi(
-						await ConnectionAsync.PlatformConnectAsync(privateKey, solutionId, platformUrl, token));
-					_eventDispatcher?.Dispose();
-					_eventDispatcher = new PrivMXEventDispatcher(_api,
-						PrivMXConfiguration.CreateLoggerFor<PrivMXEventDispatcher>());
-					_eventDispatcher.LibConnected.Subscribe(new LibConnectedObserver(this));
+						await _api.DisposeAsync();
+					destroyCancellationToken.ThrowIfCancellationRequested();
+					_api = await ConnectionSession.Create(privateKey, _cryptoApi.DerivePublicKey(privateKey), solutionId, platformUrl, destroyCancellationToken);
 					SolutionId = solutionId;
 				}
 				catch
@@ -189,14 +147,11 @@ namespace Simplito
 			{
 				try
 				{
+					_sessionState.Value = State.Authenticating;
 					if (_api != null)
-						await _api.DisconnectAsync(token);
-					_api = new PrivMxApi(
-						await ConnectionAsync.PlatformConnectPublicAsync(solutionId, platformUrl, token));
-					_eventDispatcher?.Dispose();
-					_eventDispatcher = new PrivMXEventDispatcher(_api,
-						PrivMXConfiguration.CreateLoggerFor<PrivMXEventDispatcher>());
-					_eventDispatcher.LibConnected.Subscribe(new LibConnectedObserver(this));
+						await _api.DisposeAsync();
+					destroyCancellationToken.ThrowIfCancellationRequested();
+					_api = await ConnectionSession.CreatePublic(solutionId, platformUrl, token);
 					SolutionId = solutionId;
 				}
 				catch
@@ -210,33 +165,11 @@ namespace Simplito
 			}
 		}
 
-		private void ThrowIfNotAuthenticated()
+		public async ValueTask DisconnectAsync()
 		{
-			if ((SessionState.Value & State.Authenticated) != State.Authenticated)
-				throw new NotAuthenticatedException(this);
+			_api?.DisposeAsync();
+			_sessionState.Value = State.NotAuthenticated;
 		}
 
-		private class LibConnectedObserver : IObserver<bool>
-		{
-			private readonly PrivMxSession _session;
-
-			public LibConnectedObserver(PrivMxSession session)
-			{
-				_session = session;
-			}
-
-			public void OnCompleted()
-			{
-			}
-
-			public void OnError(Exception error)
-			{
-			}
-
-			public void OnNext(bool value)
-			{
-				_session._sessionState.Value = value ? State.Authenticated : State.NotAuthenticated;
-			}
-		}
 	}
 }

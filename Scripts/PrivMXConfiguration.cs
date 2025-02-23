@@ -5,29 +5,29 @@
 // 
 // This file is part of Simplito PrivMX Unity plugin under MIT License.
 
+using PrivmxEndpointCsharpExtra.Internals;
+using PrivmxEndpointCsharpExtra.Logging;
 using Simplito.Logging;
+using UnityEngine;
 
 namespace Simplito
 {
 	/// <summary>
 	///     Class that stores library-wide configuration.
 	/// </summary>
-	public static class PrivMXConfiguration
+	internal static class PrivMXConfiguration
 	{
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		static void Initialize()
+		{
+			PrivmxEndpointCsharpExtra.Internals.Logger.SetLogger(DefaultLogger);
+			PrivmxEndpointCsharpExtra.Internals.Logger.UnobservedExceptions +=
+				exception => Debug.LogError($"Unobserved exception: {exception}");
+		}
+
 		/// <summary>
 		///     Default logger factory used when user doesn't configure logging.
 		/// </summary>
-		public static ILoggerFactory DefaultLoggerFactory { get; } = new DefaultLoggerFactory();
-
-		/// <summary>
-		///     Object used to create loggers in the library.
-		///     Factory should be set by the user as early as possible, preferably before using any part of  the library API.
-		/// </summary>
-		public static ILoggerFactory LibraryLoggerFactory { get; set; } = DefaultLoggerFactory;
-
-		internal static ILibraryLogger CreateLoggerFor<T>()
-		{
-			return LibraryLoggerFactory.CreateLoggerFor<T>();
-		}
+		public static ILibraryLogger DefaultLogger { get; } = new PrivmxUnityLogger(LogLevel.Warning);
 	}
 }

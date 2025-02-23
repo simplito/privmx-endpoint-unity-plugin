@@ -7,6 +7,7 @@
 
 using System;
 using System.Threading;
+using Internal;
 
 namespace Simplito.Internal.Utils
 {
