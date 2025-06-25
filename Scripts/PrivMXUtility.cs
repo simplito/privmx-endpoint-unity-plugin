@@ -47,7 +47,7 @@ namespace Simplito
 		{
 			if (!_initialized)
 				Initialize();
-			return _cryptoApi.DerivePrivateKey(password, salt);
+			return _cryptoApi.DerivePrivateKey2(password, salt);
 		}
 
 		/// <summary>

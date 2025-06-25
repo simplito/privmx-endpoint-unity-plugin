@@ -10,7 +10,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using PrivMX.Endpoint.Crypto;
-using PrivmxEndpointCsharpExtra;
+using PrivMX.Endpoint.Extra;
 using Simplito.Exceptions;
 using Simplito.Interfaces;
 using Simplito.Internal.Utils;
@@ -165,7 +165,7 @@ namespace Simplito
 			}
 		}
 
-		public async ValueTask DisconnectAsync()
+		public void DisconnectAsync()
 		{
 			_api?.DisposeAsync();
 			_sessionState.Value = State.NotAuthenticated;

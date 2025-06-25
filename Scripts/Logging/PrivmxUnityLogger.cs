@@ -1,6 +1,6 @@
 ﻿using System;
-using PrivmxEndpointCsharpExtra.Internals;
-using PrivmxEndpointCsharpExtra.Logging;
+using PrivMX.Endpoint.Extra.Internals;
+using PrivMX.Endpoint.Extra.Logging;
 using UnityEngine;
 
 namespace Simplito.Logging

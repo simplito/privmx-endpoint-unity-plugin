@@ -5,8 +5,8 @@
 // 
 // This file is part of Simplito PrivMX Unity plugin under MIT License.
 
-using PrivmxEndpointCsharpExtra.Internals;
-using PrivmxEndpointCsharpExtra.Logging;
+using PrivMX.Endpoint.Extra.Internals;
+using PrivMX.Endpoint.Extra.Logging;
 using Simplito.Logging;
 using UnityEngine;
 
@@ -20,8 +20,8 @@ namespace Simplito
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 		static void Initialize()
 		{
-			PrivmxEndpointCsharpExtra.Internals.Logger.SetLogger(DefaultLogger);
-			PrivmxEndpointCsharpExtra.Internals.Logger.UnobservedExceptions +=
+            PrivMX.Endpoint.Extra.Internals.Logger.SetLogger(DefaultLogger);
+            PrivMX.Endpoint.Extra.Internals.Logger.UnobservedExceptions +=
 				exception => Debug.LogError($"Unobserved exception: {exception}");
 		}
 

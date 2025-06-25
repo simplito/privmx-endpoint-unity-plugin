@@ -11,9 +11,10 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "PrivmxEndpointCsharp.dll",
-        "PrivmxEndpointCsharpExtra.dll",
-        "InternalTools.dll"
+        "PrivMX.Endpoint.dll",
+        "PrivMX.Endpoint.Extra.dll",
+        "InternalTools.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
