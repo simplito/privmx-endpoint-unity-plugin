@@ -1,6 +1,6 @@
 // Module name: SimplitoPrivmx
 // File name: PrivMXSession.cs
-// Last edit: 2024-11-24 21:29
+// Last edit: 2024-06-30
 // Copyright (c) Simplito sp. z o.o.
 // 
 // This file is part of Simplito PrivMX Unity plugin under MIT License.
@@ -9,6 +9,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using PrivMX.Endpoint.Core.Models;
 using PrivMX.Endpoint.Crypto;
 using PrivMX.Endpoint.Extra;
 using Simplito.Exceptions;
@@ -52,22 +53,30 @@ namespace Simplito
 
 		private readonly ObservableValue<State> _sessionState = new(State.NotAuthenticated);
 		private ConnectionSession? _api;
+        private IDisposable? connectionSubscription;
+		private readonly ObservableValue<bool> libConnected = new(false);
 
-		/// <summary>
-		///     Id of solution in which user is authenticated.
-		///     May be null if user is not authenticated.
-		/// </summary>
-		public string? SolutionId { get; private set; }
+        /// <summary>
+        ///     Id of solution in which user is authenticated.
+        ///     May be null if user is not authenticated.
+        /// </summary>
+        public string? SolutionId { get; private set; }
 
 		/// <summary>
 		///     Current session state.
 		/// </summary>
 		public IObservableValue<State> SessionState => _sessionState;
 
-		private void OnDestroy()
+		/// <summary>
+		///		Current state of libconnection.
+		/// </summary>
+        public IObservableValue<bool> LibConnected => libConnected;
+
+        private void OnDestroy()
 		{
 			_sessionState.Value = State.NotAuthenticated;
-			SolutionId = null;
+            UnregisterConnectionEvents();
+            SolutionId = null;
 			_api?.DisposeAsync();
 		}
 
@@ -121,11 +130,13 @@ namespace Simplito
 				{
 					SolutionId = null;
 					_sessionState.Value = State.NotAuthenticated;
-					throw;
+                    UnregisterConnectionEvents();
+                    throw;
 				}
 
 				_sessionState.Value = State.Authenticated;
-			}
+                RegisterConnectionEvents();
+            }
 		}
 
 		/// <summary>
@@ -158,18 +169,59 @@ namespace Simplito
 				{
 					SolutionId = null;
 					_sessionState.Value = State.NotAuthenticated;
-					throw;
+                    UnregisterConnectionEvents();
+                    throw;
 				}
 
 				_sessionState.Value = State.Authenticated;
-			}
+            }
 		}
 
+		/// <summary>
+		/// Disconnects the api and sets session state back to notAuth
+		/// </summary>
 		public void DisconnectAsync()
 		{
 			_api?.DisposeAsync();
 			_sessionState.Value = State.NotAuthenticated;
-		}
+            UnregisterConnectionEvents();
+        }
 
-	}
+		/// <summary>
+		/// Registers connection events
+		/// </summary>
+        public void RegisterConnectionEvents()
+        {
+            connectionSubscription = GetCurrentConnectionApi().Connection.GetConnectionEvents().Subscribe(ev =>
+            {
+				if (ev.Is<LibDisconnectedEvent>())
+				{
+					Debug.Log("Lib disconnected");
+					LibDisconnectedEvent ld = (LibDisconnectedEvent)ev;
+					libConnected.Value = false;
+                    _sessionState.Value = State.NotAuthenticated;
+				}
+				else if (ev.Is<LibConnectedEvent>())
+				{
+                    Debug.Log("Lib connected");
+                    libConnected.Value = true;
+                }
+            });
+
+            if (_sessionState.Value == State.NotAuthenticated)
+            {
+                connectionSubscription?.Dispose();
+            }
+        }
+
+		/// <summary>
+		/// Unregisters connection events
+		/// </summary>
+        public void UnregisterConnectionEvents()
+        {
+            _sessionState.Value = State.NotAuthenticated;
+            connectionSubscription?.Dispose();
+        }
+
+    }
 }
