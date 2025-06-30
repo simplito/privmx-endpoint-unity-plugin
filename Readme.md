@@ -9,6 +9,10 @@ This project enables seamless integration of PrivMX’s encryption functionaliti
 At least Unity `2022.3.x`.
 Access to running privmx bridge [privmx-bridge](https://github.com/simplito/privmx-bridge)
 
+# Installation
+
+In Unity, go to Window->Package Managera and select the "Install package from git URL" option in **+** menu tab.
+
 # Documentation
 Documentation of how to install and use this plugin is available in the [Documentation~](./Documentation~) directory.
 
