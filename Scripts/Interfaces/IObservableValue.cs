@@ -6,6 +6,7 @@
 // This file is part of Simplito PrivMX Unity plugin under MIT License.
 
 using System;
+using System.Threading;
 
 namespace Simplito.Interfaces
 {
@@ -19,5 +20,5 @@ namespace Simplito.Interfaces
 		///     Current value.
 		/// </summary>
 		public T Value { get; }
-	}
+    }
 }
