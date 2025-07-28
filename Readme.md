@@ -137,10 +137,10 @@ It should look like this:
 
 <img width="677" height="716" alt="image" src="https://github.com/user-attachments/assets/dbf90679-6c47-4db2-a6b3-eeae120da266" />
 
-## License information
+## License Information
 
-**PrivMX Endpoint C#**\
-Copyright © 2024 Simplito sp. z o.o.
+**PrivMX Endpoint Unity Plugin**\
+Copyright © 2025 Simplito sp. z o.o.
 
 This project is part of the PrivMX Platform (https://privmx.dev). \
 This project is Licensed under the MIT License.
